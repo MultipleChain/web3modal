@@ -1,0 +1,56 @@
+{
+  "namespace": "multiplechain",
+  "name": "@multiplechain/web3modal",
+  "version": "0.1.0",
+  "description": "A package that facilitates Web3Modal integration with ready-made methods.",
+  "scripts": {
+    "serve": "parcel test.html --no-cache --dist-dir test",
+    "build": "webpack",
+    "push": "webpack && npm publish"
+  },
+  "files": [
+    "dist",
+    "resources",
+    "src"
+  ],
+  "main": "dist/web3modal.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
+  "prepublishOnly": "npm run build",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MultipleChain/web3modal.git"
+  },
+  "keywords": [
+    "Blockchain",
+    "Ethereum wallets",
+    "Cryptocurrency",
+    "WalletConnect",
+    "Web3Modal"
+  ],
+  "author": "MultipleChain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MultipleChain/web3modal/issues"
+  },
+  "homepage": "https://github.com/MultipleChain/web3modal",
+  "devDependencies": {
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "https-browserify": "^1.0.0",
+    "parcel": "^2.8.2",
+    "process": "^0.11.10",
+    "punycode": "^1.4.1",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.3",
+    "webpack": "^5.64.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.5.0"
+  },
+  "dependencies": {
+    "@multiplechain/utils": "^0.1.1",
+    "@wagmi/core": "^1.4.4",
+    "@web3modal/wagmi": "^3.1.0",
+    "viem": "^1.16.6"
+  }
+}

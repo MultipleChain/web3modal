@@ -1,0 +1,1 @@
+declare module '@multiplechain/web3modal';
