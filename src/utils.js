@@ -5,11 +5,10 @@ module.exports = Object.assign(utils, {
         if (typeof error === 'object') {
             if (
                 error.name == 'UserRejectedRequestError' || 
-                error.message.includes('User rejected the request.')
+                error.message.includes('User rejected the request.') || 
+                error.message.includes('User disapproved requested chains')
             ) {
                 return reject('request-rejected');
-            } else if (error.message.includes('User disapproved requested chains')) {
-                return reject('not-accepted-chain');
             }
         }
         
