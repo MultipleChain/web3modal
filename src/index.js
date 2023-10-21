@@ -130,6 +130,13 @@ class Wallet {
     }
 
     /**
+     * @returns {Object}
+     */
+    getWalletClient() {
+        return getWalletClient();
+    }
+
+    /**
      * @returns {void}
      */
     removeOldConnection() {
