@@ -9,6 +9,8 @@ module.exports = Object.assign(utils, {
                 error.message.includes('User disapproved requested chains')
             ) {
                 return reject('request-rejected');
+            } else if (error.name == 'SwitchChainError') {
+                return reject('not-accepted-chain');
             }
         }
         

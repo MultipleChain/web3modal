@@ -177,6 +177,8 @@ class Wallet {
                 this.modal.subscribeEvents((event) => {
                     if (event.data.event == "CONNECT_ERROR") {
                         utils.rejectMessage(event.data.properties, reject);
+                    } else if (event.data.event == "MODAL_CLOSE") {
+                        reject('closed-web3modal');
                     }
                 });
         
@@ -184,6 +186,7 @@ class Wallet {
                     if (account.isConnected) {
                         try {
                             const { selectedNetworkId } = this.modal.getState();
+                            console.log(selectedNetworkId, this.connectedNetwork.id);
                             if (this.connectedNetwork.id != selectedNetworkId) {
                                 switchNetwork({
                                     chainId: this.connectedNetwork.id
