@@ -53,6 +53,11 @@ class Wallet {
      */
     connectedAccount;
 
+    /**
+     * @var {Boolean}
+     */
+    connecting = false;
+
     constructor(options) {
         let metadata = this.metadata = options.metadata;
         let projectId = this.projectId = options.projectId;
@@ -140,13 +145,7 @@ class Wallet {
      * @returns {void}
      */
     removeOldConnection() {
-        Object.keys(localStorage)
-        .filter(x => {
-            return x.startsWith('wc@2') || 
-            x.startsWith('wagmi') || 
-            x.startsWith('-walletlink')
-        })
-        .forEach(x => localStorage.removeItem(x))
+        this.modal.resetWcConnection();
     }
 
     /**
@@ -174,6 +173,12 @@ class Wallet {
                 if (!account.isConnected) {
                     this.modal.open();
                 }
+
+                this.modal.subscribeEvents((event) => {
+                    if (event.data.event == "CONNECT_ERROR") {
+                        utils.rejectMessage(event.data.properties, reject);
+                    }
+                });
         
                 watchAccount(async account => {
                     if (account.isConnected) {
