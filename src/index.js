@@ -144,8 +144,16 @@ class Wallet {
     /**
      * @returns {void}
      */
-    removeOldConnection() {
-        this.modal.resetWcConnection();
+    removeOldConnection() {Object.keys(localStorage)
+        .filter(x => {
+            return x.startsWith('wc@2') ||
+            x.startsWith('wagmi') ||
+            x.startsWith('W3M') ||
+            x.startsWith('--walletlink')
+        })
+        .forEach(x => localStorage.removeItem(x));
+        localStorage.removeItem('walletconnect');
+        localStorage.removeItem('WALLETCONNECT_DEEPLINK_CHOICE');
     }
 
     /**
