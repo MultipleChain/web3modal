@@ -186,7 +186,6 @@ class Wallet {
                     if (account.isConnected) {
                         try {
                             const { selectedNetworkId } = this.modal.getState();
-                            console.log(selectedNetworkId, this.connectedNetwork.id);
                             if (this.connectedNetwork.id != selectedNetworkId) {
                                 switchNetwork({
                                     chainId: this.connectedNetwork.id
