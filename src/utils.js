@@ -11,7 +11,7 @@ module.exports = Object.assign(utils, {
                 return reject('request-rejected');
             } else if (error.name == 'SwitchChainError') {
                 return reject('not-accepted-chain');
-            } else if (error.message.includes('Requested resource not available')) {
+            } else if (error.message.includes('Already processing eth_requestAccounts')) {
                 return reject('already-processing');
             }
         }
