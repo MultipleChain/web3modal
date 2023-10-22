@@ -20,11 +20,6 @@ const { parse } = require('url');
 class Wallet {
 
     /**
-     * @var {object}
-     */
-    network;
-
-    /**
      * @var {string}
      */
     projectId;
@@ -55,11 +50,6 @@ class Wallet {
      * @var {String}
      */
     connectedAccount;
-
-    /**
-     * @var {Boolean}
-     */
-    connecting = false;
 
     constructor(options) {
         let metadata = this.metadata = options.metadata;
@@ -279,10 +269,28 @@ class Wallet {
     coinTransfer(to, amount) {
         return new Promise(async (resolve, reject) => {
             try {
+                const { selectedNetworkId } = this.modal.getState();
+                if (this.connectedNetwork.id != selectedNetworkId) {
+                    return reject('not-accepted-chain');
+                }
+
+                const decimals = this.connectedNetwork.nativeCurrency.decimals;
+                const balance = await this.request({
+                    method: 'eth_getBalance',
+                    params: [this.connectedAccount, 'latest']
+                });
+
+                if (parseFloat(amount) > utils.toDec(balance, decimals)) {
+                    return reject('insufficient-balance');
+                }
+
+                if (parseFloat(amount) < 0) {
+                    return reject('transfer-amount-error');
+                }
                 
-                let value = utils.toHex(
+                const value = utils.toHex(
                     amount, 
-                    this.connectedNetwork.nativeCurrency.decimals
+                    decimals
                 );
 
                 resolve(await this.sendTransaction(to, value, () => {
@@ -293,7 +301,8 @@ class Wallet {
             }
         });
     }
-/**
+
+    /**
      * @param {Object} options 
      * @returns {String}
      */
@@ -307,10 +316,10 @@ class Wallet {
      * @param {String} address 
      * @param {String} functionName 
      * @param {Array} abi 
-     * @param  {...any} args 
+     * @param  {Array} args 
      * @returns {any}
      */
-    async readContract(address, functionName, abi, ...args) {
+    async readContract(address, functionName, abi, args) {
         return await readContract({
             abi,
             args,
@@ -328,11 +337,42 @@ class Wallet {
     tokenTransfer(to, amount, tokenAddress) {
         return new Promise(async (resolve, reject) => {
             try {
+                const { selectedNetworkId } = this.modal.getState();
+                if (this.connectedNetwork.id != selectedNetworkId) {
+                    return reject('not-accepted-chain');
+                }
+
                 const token = await fetchToken({
                     address: tokenAddress,
                 });
 
-                let value = utils.toHex(
+                const balance = await this.readContract(
+                    tokenAddress,
+                    'balanceOf',
+                    [{
+                        "constant": true,
+                        "inputs": [{"name":"_owner","type":"address"}],
+                        "name":"balanceOf",
+                        "outputs": [{"name":"balance","type":"uint256"}],
+                        "payable": false,
+                        "stateMutability": "view",
+                        "type": "function"
+                    
+                    }],
+                    [
+                        this.connectedAccount
+                    ]
+                );
+
+                if (parseFloat(amount) > utils.toDec(balance, token.decimals)) {
+                    return reject('insufficient-balance');
+                }
+
+                if (parseFloat(amount) < 0) {
+                    return reject('transfer-amount-error');
+                }
+
+                const value = utils.toHex(
                     amount, 
                     token.decimals
                 );
