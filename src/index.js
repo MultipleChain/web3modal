@@ -12,8 +12,10 @@ const {
     sendTransaction, 
     prepareWriteContract,
     prepareSendTransaction,
-    getWalletClient
+    getWalletClient,
+    getPublicClient
 } = require('@wagmi/core');
+const { parse } = require('url');
 
 class Wallet {
 
@@ -131,15 +133,27 @@ class Wallet {
      * @returns {Prmise}
      */
     async request(params) {
-        let client = await getWalletClient();
+        let client = await this.getWalletClient();
         return client.request(params);
     }
 
     /**
      * @returns {Object}
      */
-    getWalletClient() {
-        return getWalletClient();
+    async getWalletClient() {
+        let wc = await getWalletClient();
+        return wc ? wc : this.getPublicClient();
+    }
+
+    /**
+     * @returns {Object}
+     */
+    async getPublicClient() {
+        let pc = await getPublicClient();
+        if (!pc.account) {
+            pc.account = this.connectedAccount;
+        }
+        return pc;
     }
 
     /**
@@ -168,13 +182,21 @@ class Wallet {
     /**
      * @returns {String}
      */
+    async getChainId() {
+        let id = await this.request({method: 'eth_chainId'});
+        if (!utils.isNumeric(id)) return parseInt(id, 16);
+        return id;
+    }
+
+    /**
+     * @returns {String}
+     */
     async getChainHexId() {
-        const { selectedNetworkId } = this.modal.getState();
-        if (utils.isNumeric(selectedNetworkId)) {
-            return '0x' + selectedNetworkId.toString(16);
-        }
-        return selectedNetworkId;
-    };
+        let id = await this.request({method: 'eth_chainId'});
+        if (id == '0x01') return '0x1';
+        if (utils.isNumeric(id)) return '0x' + id.toString(16);
+        return id;
+    }
 
     /**
      * @returns {Boolean}
@@ -184,7 +206,7 @@ class Wallet {
     }
 
     async connect() {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 let account = getAccount();
                 if (!account.isConnected) {
@@ -338,6 +360,21 @@ class Wallet {
                 utils.rejectMessage(error, reject);
             }
         });
+    }
+
+    /**
+     * @param {String} to
+     * @param {Integer} amount
+     * @param {String|null} tokenAddress
+     * @return {Transaction|Object}
+     * @throws {Error}
+     */
+    transfer(to, amount, tokenAddress = null) {
+        if (tokenAddress) {
+            return this.tokenTransfer(to, amount, tokenAddress);
+        } else {
+            return this.coinTransfer(to, amount);
+        }
     }
 }
 

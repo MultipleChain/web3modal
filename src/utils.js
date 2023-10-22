@@ -13,6 +13,8 @@ module.exports = Object.assign(utils, {
                 return reject('not-accepted-chain');
             } else if (error.message.includes('Already processing eth_requestAccounts')) {
                 return reject('already-processing');
+            } else if (error.message.includes('An unknown RPC error occurred')) {
+                return reject('invalid-rpc-error');
             }
         }
         
