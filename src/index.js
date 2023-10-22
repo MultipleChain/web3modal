@@ -242,23 +242,43 @@ class Wallet {
     }
 
     /**
-     * @param {String} to 
-     * @param {String} value 
-     * @param {Function} onError
-     * @returns {String}
+     * @param {Array} params 
+     * @returns {Promise}
      */
-    async sendTransaction(to, value, onError = null) {
-        let {hash} = await sendTransaction(await prepareSendTransaction({
-            to,
-            value,
-            account: this.connectedAccount,
-            onError: (error) => {
-                typeof onError == 'function' && onError(error);
-            }
-        }));
-
-        return hash;
+    sendTransaction(params) {
+        return new Promise(async (resolve, reject) => {
+            this.request({
+                method: 'eth_sendTransaction',
+                params,
+            })
+            .then((transactionId) => {
+                resolve(transactionId);
+            })
+            .catch((error) => {
+                utils.rejectMessage(error, reject);
+            });
+        });
     }
+
+    /**
+     * @param {Ocject} params 
+     * @returns 
+     */
+    getEstimateGas(params) {
+        return new Promise(async (resolve, reject) => {
+            this.request({
+                method: 'eth_estimateGas',
+                params: [params],
+            })
+            .then((gas) => {
+                resolve(gas);
+            })
+            .catch((error) => {
+                utils.rejectMessage(error, reject);
+            });
+        });
+    }
+
 
     /**
      * @param {String} to
@@ -292,10 +312,27 @@ class Wallet {
                     amount, 
                     decimals
                 );
+    
+                const gas = await this.getEstimateGas({
+                    from: this.connectedAccount,
+                    to,
+                    value,
+                    data: "0x",
+                });
 
-                resolve(await this.sendTransaction(to, value, () => {
+                this.sendTransaction([{
+                    from: this.connectedAccount,
+                    to,
+                    value,
+                    gas,
+                    data: "0x",
+                }])
+                .then((transactionId) => {
+                    resolve(transactionId);
+                })
+                .catch((error) => {
                     utils.rejectMessage(error, reject);
-                }));
+                });
             } catch (error) {
                 utils.rejectMessage(error, reject);
             }

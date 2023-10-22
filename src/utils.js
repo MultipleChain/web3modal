@@ -5,6 +5,7 @@ module.exports = Object.assign(utils, {
         if (typeof error === 'object') {
             if (
                 error.name == 'UserRejectedRequestError' || 
+                error.message.includes('User canceled') || 
                 error.message.includes('User rejected the request') || 
                 error.message.includes('User disapproved requested chains')
             ) {
@@ -15,6 +16,8 @@ module.exports = Object.assign(utils, {
                 return reject('already-processing');
             } else if (error.message.includes('An unknown RPC error occurred')) {
                 return reject('invalid-rpc-error');
+            } else if (error.message.includes('The contract function')) {
+                return reject('invalid-contract-address');
             }
         }
         
