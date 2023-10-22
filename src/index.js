@@ -145,8 +145,7 @@ class Wallet {
     /**
      * @returns {void}
      */
-    async removeOldConnection() {
-        await disconnect();
+    removeOldConnection() {
         Object.keys(localStorage).filter(x => {
             return x.startsWith('wc@2') ||
             x.startsWith('wagmi') ||
@@ -156,6 +155,14 @@ class Wallet {
         .forEach(x => localStorage.removeItem(x));
         localStorage.removeItem('walletconnect');
         localStorage.removeItem('WALLETCONNECT_DEEPLINK_CHOICE');
+
+        try {
+            this.modal.resetAccount();
+            this.modal.resetNetwork();
+            this.modal.resetWcConnection();
+        } catch (error) {}
+
+        return disconnect();
     }
 
     /**
@@ -182,6 +189,8 @@ class Wallet {
                 let account = getAccount();
                 if (!account.isConnected) {
                     this.modal.open();
+                } else {
+                    return resolve(this.connectedAccount = account.address);
                 }
 
                 this.modal.subscribeEvents((event) => {
