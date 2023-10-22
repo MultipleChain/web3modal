@@ -2,6 +2,7 @@ const utils = require('./utils');
 const wagmiChains = require('@wagmi/core/chains');
 const { createWeb3Modal, defaultWagmiConfig } = require('@web3modal/wagmi');
 const { 
+    disconnect,
     watchAccount, 
     getAccount, 
     switchNetwork, 
@@ -144,8 +145,9 @@ class Wallet {
     /**
      * @returns {void}
      */
-    removeOldConnection() {Object.keys(localStorage)
-        .filter(x => {
+    async removeOldConnection() {
+        await disconnect();
+        Object.keys(localStorage).filter(x => {
             return x.startsWith('wc@2') ||
             x.startsWith('wagmi') ||
             x.startsWith('W3M') ||
