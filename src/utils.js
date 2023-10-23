@@ -2,9 +2,12 @@ const utils = require('@multiplechain/utils');
 
 module.exports = Object.assign(utils, {
     async rejectMessage(error, reject) {
+        return reject('request-rejected');
         if (typeof error === 'object') {
             if (
                 error.name == 'UserRejectedRequestError' || 
+                error.message.includes('cancel') || 
+                error.message.includes('reject') || 
                 error.message.includes('User canceled') || 
                 error.message.includes('User rejected the request') || 
                 error.message.includes('User disapproved requested chains')
