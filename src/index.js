@@ -9,9 +9,7 @@ const {
     fetchToken,
     readContract,
     writeContract,
-    sendTransaction, 
     prepareWriteContract,
-    prepareSendTransaction,
     getWalletClient,
     getPublicClient
 } = require('@wagmi/core');
@@ -52,16 +50,53 @@ class Wallet {
     connectedAccount;
 
     constructor(options) {
+        let network = options.network;
         let metadata = this.metadata = options.metadata;
         let projectId = this.projectId = options.projectId;
-        let network = this.connectedNetwork = options.network;
 
         let themeMode = this.themeMode;
         if (options.themeMode) {
             themeMode = this.themeMode = options.themeMode;
         }
 
-        const chains = [Object.values(wagmiChains).find((chain) => chain.id == network.id)];
+        let findedNetwork = Object.values(wagmiChains).find((chain) => {
+            if (utils.isNumeric(network)) {
+                return chain.id == network;
+            } else {
+                return chain.id == network.id;
+            }
+        });
+
+        const chains = [];
+        if (!findedNetwork) {
+            let defaultRpc = {
+                http: [network.rpcUrl],
+            }
+            if (network.wsUrl) {
+                defaultRpc.webSocket = [network.wsUrl]
+            }
+
+            chains.push(Object.assign({
+                network: network.name,
+                nativeCurrency: {
+                    name: network.nativeCurrency.symbol,
+                },
+                rpcUrls: {
+                    default: defaultRpc,
+                    public: defaultRpc
+                },
+                blockExplorerUrls: {
+                    default: {
+                        name: network.name,
+                        url: network.explorerUrl
+                    }
+                },
+            }, network))
+        } else {
+            chains.push(findedNetwork);
+        }
+
+        this.connectedNetwork = chains[0];
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
