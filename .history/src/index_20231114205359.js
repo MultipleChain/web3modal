@@ -66,7 +66,7 @@ class Wallet {
         let chains = [];
         
         if (network) {
-            let findedNetwork = Object.values(wagmiChains).find((chain) => {
+            let findedNetwork = chains.find((chain) => {
                 if (utils.isNumeric(network)) {
                     return chain.id == network;
                 } else {
@@ -104,7 +104,7 @@ class Wallet {
 
             this.connectedNetwork = chains[0];
         } else {
-            chains = Object.values(wagmiChains);
+            chains = wagmiChains;
         }
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });

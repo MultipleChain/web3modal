@@ -11,7 +11,7 @@ module.exports = Object.assign(utils, {
                 error.message.includes('User canceled') || 
                 error.message.includes('User rejected the request') || 
                 error.message.includes('User disapproved requested chains') ||
-                error.message.includes('MetaMask Personal Message Signature: User denied message signature') 
+                error.message.includes('MetaMask Personal Message Signature: User denied message signature') ||
             ) {
                 return reject('request-rejected');
             } else if (error.name == 'SwitchChainError') {

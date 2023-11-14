@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="sign">
+        Sign
+    </button>
+    <script type="module">
+        import Wallet from './src/index.js';
+        const projectId = '113d9f5689edd84ff230c2a6d679c80c';
+        
+        let ethereum = {
+            "id": 5,
+            "hexId": "0x5",
+            "name": "Ethereum Goerli Testnet",
+            "rpcUrl": "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            "wsUrl": "wss://goerli.infura.io/ws/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            "explorerUrl": "https://goerli.etherscan.io/",
+            "nativeCurrency": {
+                "symbol" : "ETH",
+                "decimals" : 18
+            }
+        }
+
+        let ethereum2 = {
+            "id": 1,
+            "hexId": "0x1",
+            "name": "Ethereum Mainnet",
+            "rpcUrl": "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            "explorerUrl": "https://etherscan.io/",
+            "nativeCurrency": {
+                "symbol": "ETH",
+                "decimals": 18
+            }
+        };
+
+        let bsc = {
+            "id": 97,
+            "hexId": "0x61",
+            "name": "BNB Chain Testnet",
+            "rpcUrl": "https://bsc-testnet.publicnode.com",
+            "explorerUrl": "https://testnet.bscscan.com/",
+            "nativeCurrency": {
+                "symbol" : "BNB",
+                "decimals" : 18
+            }
+        };
+
+        let bsc2 = {
+            "id": 566,
+            "hexId": "0x38",
+            "name": "BNB Chain Mainnet",
+            "rpcUrl": "https://bsc-dataseed.binance.org/",
+            "explorerUrl": "https://bscscan.com/",
+            "nativeCurrency": {
+                "symbol": "BNB",
+                "decimals": 18
+            }
+        }
+
+        let wallet = new Wallet({
+            projectId,
+        });
+
+        let amount = 0.0001;
+        let receiver = '0x3BFC285D60F79258D999a669B98aD8662c6277b5';
+        // USDT
+        let tokenAddress = '0x5AB6F31B29Fc2021436B3Be57dE83Ead3286fdc7';
+        // MTK
+        let tokenAddress2 = '0xcbBf4687CFE3e413D3714E2AA2C4c9a317f52C58';
+
+        (async() => {
+            
+            await wallet.removeOldConnection();
+            console.log(await wallet.connect());
+        })();
+
+        document.getElementById('sign').addEventListener('click', async () => {
+        });
+    </script>
+</body>
+</html>

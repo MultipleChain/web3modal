@@ -63,10 +63,10 @@ class Wallet {
             themeMode = this.themeMode = options.themeMode;
         }
 
-        let chains = [];
+        let chains = Object.values(wagmiChains);
         
         if (network) {
-            let findedNetwork = Object.values(wagmiChains).find((chain) => {
+            let findedNetwork = chains.find((chain) => {
                 if (utils.isNumeric(network)) {
                     return chain.id == network;
                 } else {
@@ -103,8 +103,6 @@ class Wallet {
             }
 
             this.connectedNetwork = chains[0];
-        } else {
-            chains = Object.values(wagmiChains);
         }
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
@@ -307,7 +305,7 @@ class Wallet {
     }
 
     /**
-     * @param {String} message 
+     * @param {Array} params 
      * @returns {Promise}
      */
     personalSign(message) {

@@ -63,10 +63,10 @@ class Wallet {
             themeMode = this.themeMode = options.themeMode;
         }
 
-        let chains = [];
+        let chains = Object.values(wagmiChains);
         
         if (network) {
-            let findedNetwork = Object.values(wagmiChains).find((chain) => {
+            let findedNetwork = chains.find((chain) => {
                 if (utils.isNumeric(network)) {
                     return chain.id == network;
                 } else {
@@ -103,8 +103,6 @@ class Wallet {
             }
 
             this.connectedNetwork = chains[0];
-        } else {
-            chains = Object.values(wagmiChains);
         }
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
@@ -306,10 +304,6 @@ class Wallet {
         });
     }
 
-    /**
-     * @param {String} message 
-     * @returns {Promise}
-     */
     personalSign(message) {
         return new Promise((resolve, reject) => {
             this.request({
@@ -321,7 +315,17 @@ class Wallet {
                 resolve(signature);
             })
             .catch(error => {
-                utils.rejectMessage(error, reject);
+                if (
+                    error.code == 4001 || 
+                    error.code == -32603 || 
+                    error.message == 'cancelled' || 
+                    error.message == 'User canceled' ||
+                    error.message == 'MetaMask Personal Message Signature: User denied message signature.'
+                ) {
+                    reject('signature-request-denied');
+                } else {
+                    reject('something-went-wrong');
+                }
             });
         })
     }
