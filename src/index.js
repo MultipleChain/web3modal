@@ -39,6 +39,11 @@ class Wallet {
     modal;
 
     /**
+     * @var {Array}
+     */
+    networks;
+
+    /**
      * @var {Object}
      */
     connectedNetwork;
@@ -58,44 +63,47 @@ class Wallet {
             themeMode = this.themeMode = options.themeMode;
         }
 
-        let findedNetwork = Object.values(wagmiChains).find((chain) => {
-            if (utils.isNumeric(network)) {
-                return chain.id == network;
+        let chains = Object.values(wagmiChains);
+        
+        if (network) {
+            let findedNetwork = chains.find((chain) => {
+                if (utils.isNumeric(network)) {
+                    return chain.id == network;
+                } else {
+                    return chain.id == network.id;
+                }
+            });
+
+            if (!findedNetwork) {
+                let defaultRpc = {
+                    http: [network.rpcUrl],
+                }
+                if (network.wsUrl) {
+                    defaultRpc.webSocket = [network.wsUrl]
+                }
+
+                chains.push(Object.assign({
+                    network: network.name,
+                    nativeCurrency: {
+                        name: network.nativeCurrency.symbol,
+                    },
+                    rpcUrls: {
+                        default: defaultRpc,
+                        public: defaultRpc
+                    },
+                    blockExplorerUrls: {
+                        default: {
+                            name: network.name,
+                            url: network.explorerUrl
+                        }
+                    },
+                }, network))
             } else {
-                return chain.id == network.id;
-            }
-        });
-
-        const chains = [];
-        if (!findedNetwork) {
-            let defaultRpc = {
-                http: [network.rpcUrl],
-            }
-            if (network.wsUrl) {
-                defaultRpc.webSocket = [network.wsUrl]
+                chains.push(findedNetwork);
             }
 
-            chains.push(Object.assign({
-                network: network.name,
-                nativeCurrency: {
-                    name: network.nativeCurrency.symbol,
-                },
-                rpcUrls: {
-                    default: defaultRpc,
-                    public: defaultRpc
-                },
-                blockExplorerUrls: {
-                    default: {
-                        name: network.name,
-                        url: network.explorerUrl
-                    }
-                },
-            }, network))
-        } else {
-            chains.push(findedNetwork);
+            this.connectedNetwork = chains[0];
         }
-
-        this.connectedNetwork = chains[0];
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
@@ -108,6 +116,8 @@ class Wallet {
                 '--w3m-z-index': 999999999999,
             }
         });
+
+        this.networks = chains;
     }
 
     /**
@@ -251,7 +261,7 @@ class Wallet {
                     if (account.isConnected) {
                         try {
                             const { selectedNetworkId } = this.modal.getState();
-                            if (this.connectedNetwork.id != selectedNetworkId) {
+                            if (this.connectedNetwork && this.connectedNetwork.id != selectedNetworkId) {
                                 switchNetwork({
                                     chainId: this.connectedNetwork.id
                                 })
@@ -262,6 +272,7 @@ class Wallet {
                                     utils.rejectMessage(error, reject);
                                 });
                             } else {
+                                this.setConnectedNetwork(selectedNetworkId);
                                 resolve(this.connectedAccount = account.address);
                             }
                         } catch (error) {
@@ -272,6 +283,16 @@ class Wallet {
             } catch (error) {
                 utils.rejectMessage(error, reject);
             }
+        });
+    }
+
+    /**
+     * @param {Integer} networkId
+     * @returns {void}
+     */
+    setConnectedNetwork(networkId) {
+        this.connectedNetwork = this.networks.find((network) => {
+            return network.id == networkId;
         });
     }
 
