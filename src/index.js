@@ -13,7 +13,6 @@ const {
     getWalletClient,
     getPublicClient
 } = require('@wagmi/core');
-const { parse } = require('url');
 
 class Wallet {
 
