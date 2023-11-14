@@ -262,9 +262,7 @@ class Wallet {
                         try {
                             const { selectedNetworkId } = this.modal.getState();
                             if (this.connectedNetwork && this.connectedNetwork.id != selectedNetworkId) {
-                                switchNetwork({
-                                    chainId: this.connectedNetwork.id
-                                })
+                                this.switchNetwork(this.connectedNetwork.id)
                                 .then(() => {
                                     resolve(this.connectedAccount = account.address);
                                 })
@@ -283,6 +281,16 @@ class Wallet {
             } catch (error) {
                 utils.rejectMessage(error, reject);
             }
+        });
+    }
+
+    /**
+     * @param {Integer} networkId 
+     * @returns 
+     */
+    switchNetwork(networkId) {
+        return switchNetwork({
+            chainId: networkId
         });
     }
 
