@@ -68,7 +68,7 @@ class Wallet {
         if (network) {
             let findedNetwork = Object.values(wagmiChains).find((chain) => {
                 if (utils.isNumeric(network)) {
-                    return chain.id == network;
+                    return chain.id == parseInt(network);
                 } else if (typeof network == 'string') {
                     return chain.network == network;
                 } else if (typeof network == 'object') {
