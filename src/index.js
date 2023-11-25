@@ -128,6 +128,16 @@ class Wallet {
         this.networks = chains;
     }
 
+    setNetwork(network) {
+        if (typeof network == 'object') {
+            this.connectedNetwork = network;
+        } else if (utils.isNumeric(network)) {
+            this.connectedNetwork = this.networks.find(n => n.id == parseInt(network));
+        } else if (typeof network == 'string') {
+            this.connectedNetwork = this.networks.find(n => n.network == network);
+        }
+    }
+    
     /**
      * @returns {String}
      */
