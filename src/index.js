@@ -69,12 +69,14 @@ class Wallet {
             let findedNetwork = Object.values(wagmiChains).find((chain) => {
                 if (utils.isNumeric(network)) {
                     return chain.id == network;
-                } else {
+                } else if (typeof network == 'string') {
+                    return chain.network == network;
+                } else if (typeof network == 'object') {
                     return chain.id == network.id;
                 }
             });
 
-            if (!findedNetwork) {
+            if (!findedNetwork && typeof network == 'object') {
                 let defaultRpc = {
                     http: [network.rpcUrl],
                 }
@@ -105,6 +107,10 @@ class Wallet {
             this.connectedNetwork = chains[0];
         } else {
             chains = Object.values(wagmiChains);
+        }
+
+        if (chains.length == 0) {
+            throw new Error('network-not-found');
         }
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
