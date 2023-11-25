@@ -77,29 +77,7 @@ class Wallet {
             });
 
             if (!findedNetwork && typeof network == 'object') {
-                let defaultRpc = {
-                    http: [network.rpcUrl],
-                }
-                if (network.wsUrl) {
-                    defaultRpc.webSocket = [network.wsUrl]
-                }
-
-                chains.push(Object.assign({
-                    network: network.name,
-                    nativeCurrency: {
-                        name: network.nativeCurrency.symbol,
-                    },
-                    rpcUrls: {
-                        default: defaultRpc,
-                        public: defaultRpc
-                    },
-                    blockExplorerUrls: {
-                        default: {
-                            name: network.name,
-                            url: network.explorerUrl
-                        }
-                    },
-                }, network))
+                chains.push(this.wagmiStandart(network));
             } else {
                 chains.push(findedNetwork);
             }
@@ -128,9 +106,34 @@ class Wallet {
         this.networks = chains;
     }
 
+    wagmiStandart(network) {
+        let defaultRpc = {
+            http: [network.rpcUrl],
+        }
+        if (network.wsUrl) {
+            defaultRpc.webSocket = [network.wsUrl]
+        }
+        return Object.assign({
+            network: network.name,
+            nativeCurrency: {
+                name: network.nativeCurrency.symbol,
+            },
+            rpcUrls: {
+                default: defaultRpc,
+                public: defaultRpc
+            },
+            blockExplorerUrls: {
+                default: {
+                    name: network.name,
+                    url: network.explorerUrl
+                }
+            },
+        }, network);
+    }
+
     setNetwork(network) {
         if (typeof network == 'object') {
-            this.connectedNetwork = network;
+            this.connectedNetwork = this.wagmiStandart(network);
         } else if (utils.isNumeric(network)) {
             this.connectedNetwork = this.networks.find(n => n.id == parseInt(network));
         } else if (typeof network == 'string') {
