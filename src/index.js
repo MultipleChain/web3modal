@@ -288,7 +288,9 @@ class Wallet {
                                     resolve(this.connectedAccount = account.address);
                                 })
                                 .catch((error) => {
-                                    utils.rejectMessage(error, reject);
+                                    if (!error.message.includes("'wallet_switchEthereumChain' already pending")) {
+                                        utils.rejectMessage(error, reject);
+                                    }
                                 });
                             } else {
                                 this.setConnectedNetwork(selectedNetworkId);
