@@ -271,6 +271,7 @@ class Wallet {
                 }
 
                 this.modal.subscribeEvents((event) => {
+                    console.log(event.data.event)
                     if (event.data.event == "CONNECT_ERROR") {
                         utils.rejectMessage(event.data.properties, reject);
                     } else if (event.data.event == "MODAL_CLOSE") {
@@ -290,8 +291,8 @@ class Wallet {
                                 .then(() => {
                                     resolve(this.connectedAccount = account.address);
                                 })
-                                .catch((error) => {
-                                    utils.rejectMessage(error, reject);
+                                .catch(() => {
+                                    reject('switch-chain-rejected');
                                 });
                             } else {
                                 this.setConnectedNetwork(selectedNetworkId);
