@@ -47,6 +47,11 @@ class Wallet {
      * @var {Object}
      */
     connectedNetwork;
+
+    /**
+     * @var {Function}
+     */
+    connectRejectMethod;
     
     /**
      * @var {String}
@@ -100,6 +105,12 @@ class Wallet {
             chains,
             themeVariables: {
                 '--w3m-z-index': 999999999999,
+            }
+        });
+        
+        this.modal.subscribeEvents((event) => {
+            if (event.data.event == "MODAL_CLOSE") {
+                this.connectRejectMethod('closed-web3modal');
             }
         });
 
@@ -263,6 +274,8 @@ class Wallet {
     async connect() {
         return new Promise(async (resolve, reject) => {
             try {
+                this.connectRejectMethod = reject;
+                
                 let account = getAccount();
                 if (!account.isConnected) {
                     this.modal.open();
@@ -270,12 +283,6 @@ class Wallet {
                     return resolve(this.connectedAccount = account.address);
                 }
 
-                this.modal.subscribeEvents((event) => {
-                    if (event.data.event == "MODAL_CLOSE") {
-                        reject('closed-web3modal');
-                    }
-                });
-        
                 let switching = false;
                 watchAccount(async account => {
                     if (account.isConnected) {
