@@ -1,7 +1,7 @@
 {
   "namespace": "multiplechain",
   "name": "@multiplechain/web3modal",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "description": "A package that facilitates Web3Modal integration with ready-made methods.",
   "scripts": {
     "serve": "parcel test.html --no-cache --dist-dir test",

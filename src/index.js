@@ -271,10 +271,7 @@ class Wallet {
                 }
 
                 this.modal.subscribeEvents((event) => {
-                    console.log(event.data.event)
-                    if (event.data.event == "CONNECT_ERROR") {
-                        utils.rejectMessage(event.data.properties, reject);
-                    } else if (event.data.event == "MODAL_CLOSE") {
+                    if (event.data.event == "MODAL_CLOSE") {
                         reject('closed-web3modal');
                     }
                 });
