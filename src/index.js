@@ -60,6 +60,7 @@ class Wallet {
 
     constructor(options) {
         let network = options.network;
+        let customWallets = options.customWallets || [];
         let metadata = this.metadata = options.metadata;
         let projectId = this.projectId = options.projectId;
 
@@ -103,6 +104,7 @@ class Wallet {
             wagmiConfig, 
             projectId, 
             chains,
+            customWallets,
             themeVariables: {
                 '--w3m-z-index': 999999999999,
             }
