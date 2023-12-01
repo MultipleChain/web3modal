@@ -112,7 +112,9 @@ class Wallet {
         
         this.modal.subscribeEvents((event) => {
             if (event.data.event == "MODAL_CLOSE") {
-                this.connectRejectMethod('closed-web3modal');
+                if (typeof this.connectRejectMethod == 'function') {
+                    this.connectRejectMethod('closed-web3modal');
+                }
             }
         });
 
