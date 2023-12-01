@@ -278,19 +278,20 @@ class Wallet {
                     }
                 });
         
+                let switching = false;
                 watchAccount(async account => {
                     if (account.isConnected) {
                         try {
                             const { selectedNetworkId } = this.modal.getState();
                             if (this.connectedNetwork && this.connectedNetwork.id != selectedNetworkId) {
+                                if (switching) return;
+                                switching = true;
                                 this.switchNetwork(this.connectedNetwork.id)
                                 .then(() => {
                                     resolve(this.connectedAccount = account.address);
                                 })
                                 .catch((error) => {
-                                    if (!error.message.includes("'wallet_switchEthereumChain' already pending")) {
-                                        utils.rejectMessage(error, reject);
-                                    }
+                                    utils.rejectMessage(error, reject);
                                 });
                             } else {
                                 this.setConnectedNetwork(selectedNetworkId);
