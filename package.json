@@ -1,7 +1,7 @@
 {
   "namespace": "multiplechain",
   "name": "@multiplechain/web3modal",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "A package that facilitates Web3Modal integration with ready-made methods.",
   "scripts": {
     "serve": "parcel test.html --no-cache --dist-dir test",
@@ -51,6 +51,6 @@
     "@multiplechain/utils": "^0.1.2",
     "@wagmi/core": "^1.4.7",
     "@web3modal/wagmi": "^3.3.2",
-    "viem": "^1.19.11"
+    "viem": "^1.19.9"
   }
 }

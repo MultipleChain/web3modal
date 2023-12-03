@@ -233,8 +233,9 @@ class Wallet {
         Object.keys(localStorage).filter(x => {
             return x.startsWith('wc@2') ||
             x.startsWith('wagmi') ||
+            x.startsWith('@w3m') ||
             x.startsWith('W3M') ||
-            x.startsWith('--walletlink')
+            x.startsWith('-walletlink')
         })
         .forEach(x => localStorage.removeItem(x));
         localStorage.removeItem('walletconnect');
