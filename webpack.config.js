@@ -16,6 +16,12 @@ module.exports = {
         new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1, // disable creating additional chunks
         }),
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
     ],
     resolve: {
         extensions: ["", ".js", ".jsx"],
