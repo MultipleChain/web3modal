@@ -131,10 +131,12 @@ class Wallet {
         if (network.wsUrl) {
             defaultRpc.webSocket = [network.wsUrl]
         }
-        return Object.assign({
+        return Object.assign(network, {
             network: network.name,
             nativeCurrency: {
                 name: network.nativeCurrency.symbol,
+                symbol: network.nativeCurrency.symbol,
+                decimals: network.nativeCurrency.decimals,
             },
             rpcUrls: {
                 default: defaultRpc,
@@ -146,7 +148,7 @@ class Wallet {
                     url: network.explorerUrl
                 }
             },
-        }, network);
+        });
     }
 
     setNetwork(network) {
