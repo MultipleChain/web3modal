@@ -2,7 +2,6 @@ const utils = require('@multiplechain/utils');
 
 module.exports = Object.assign(utils, {
     async rejectMessage(error, reject) {
-        console.error(error);
         return reject('request-rejected');
         if (typeof error === 'object') {
             if (

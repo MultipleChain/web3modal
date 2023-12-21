@@ -11,7 +11,10 @@ const {
     writeContract,
     prepareWriteContract,
     getWalletClient,
-    getPublicClient
+    getPublicClient,
+    signMessage,
+    sendTransaction, 
+    prepareSendTransaction
 } = require('@wagmi/core');
 
 class Wallet {
@@ -109,7 +112,7 @@ class Wallet {
                 '--w3m-z-index': 999999999999,
             }
         });
-        
+
         this.modal.subscribeEvents((event) => {
             if (event.data.event == "MODAL_CLOSE") {
                 if (typeof this.connectRejectMethod == 'function') {
@@ -343,18 +346,12 @@ class Wallet {
      * @returns {Promise}
      */
     personalSign(message) {
-        return new Promise((resolve, reject) => {
-            this.request({
-                method: 'personal_sign',
-                params: [message, this.connectedAccount],
-                from: this.connectedAccount
-            })
-            .then(signature => {
-                resolve(signature);
-            })
-            .catch(error => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                resolve(await signMessage({message}));
+            } catch (error) {
                 utils.rejectMessage(error, reject);
-            });
+            }
         })
     }
     
@@ -431,26 +428,17 @@ class Wallet {
                     decimals
                 );
     
-                const gas = await this.getEstimateGas({
-                    from: this.connectedAccount,
-                    to,
-                    value,
-                    data: "0x",
-                });
+                try {
+                    const { hash } = await sendTransaction((await prepareSendTransaction({
+                        to,
+                        value,
+                        account: this.connectedAccount,
+                    })));
 
-                this.sendTransaction([{
-                    from: this.connectedAccount,
-                    to,
-                    value,
-                    gas,
-                    data: "0x",
-                }])
-                .then((transactionId) => {
-                    resolve(transactionId);
-                })
-                .catch((error) => {
+                    resolve(hash);
+                } catch (error) {
                     utils.rejectMessage(error, reject);
-                });
+                }
             } catch (error) {
                 utils.rejectMessage(error, reject);
             }
