@@ -102,6 +102,10 @@ class Wallet {
 
         const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
+        wagmiConfig.autoConnect = () => {
+            return;
+        }
+
         this.modal = createWeb3Modal({ 
             themeMode, 
             wagmiConfig, 
