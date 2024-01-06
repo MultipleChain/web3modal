@@ -2,9 +2,16 @@ const utils = require('@multiplechain/utils');
 
 module.exports = Object.assign(utils, {
     async rejectMessage(error, reject) {
+        if (typeof error === 'object') {
+            if (error.name == "ContractFunctionExecutionError") {
+                return reject('contract-function-error');
+            } 
+        }
         return reject('request-rejected');
         if (typeof error === 'object') {
-            if (
+            if (error.name == "ContractFunctionExecutionError") {
+                reject('contract-function-error');
+            } else if (
                 error.name == 'UserRejectedRequestError' || 
                 error.message.includes('cancel') || 
                 error.message.includes('reject') || 

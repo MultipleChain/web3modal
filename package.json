@@ -1,10 +1,10 @@
 {
   "namespace": "multiplechain",
   "name": "@multiplechain/web3modal",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A package that facilitates Web3Modal integration with ready-made methods.",
   "scripts": {
-    "serve": "parcel test.html --port 4035--no-cache --dist-dir test",
+    "serve": "parcel test.html --port 4035 --no-cache --dist-dir test",
     "build": "webpack",
     "push": "webpack && npm publish"
   },
