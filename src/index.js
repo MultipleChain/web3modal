@@ -276,10 +276,9 @@ class Wallet {
     async connect() {
         return new Promise((resolve, reject) => {
             this.connection()
-            .then((account) => {
+            .then(async (account) => {
                 // if networks not equal
-                const { selectedNetworkId } = this.modal.getState();
-                if (this.connectedNetwork.id != selectedNetworkId) {
+                if (this.connectedNetwork.id != (await this.getChainId())) {
                     return reject('not-accepted-chain');
                 }
                 resolve(account);
