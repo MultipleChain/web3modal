@@ -117,9 +117,12 @@ class Wallet {
             }
         });
 
-        this.modal.subscribeEvents((event) => {
+        this.modal.subscribeEvents(async (event) => {
             if (event.data.event == "MODAL_CLOSE") {
                 if (typeof this.connectRejectMethod == 'function') {
+                    if (this.connectedNetwork.id != (await this.getChainId())) {
+                        return this.connectRejectMethod('not-accepted-chain');
+                    }
                     this.connectRejectMethod('closed-web3modal');
                 }
             }
@@ -263,7 +266,7 @@ class Wallet {
      * @returns {String}
      */
     async getChainId() {
-        return parseInt((await this.request({method: 'eth_chainId'})), 16);
+        return (await this.getWalletClient()).getChainId();
     }
 
     /**

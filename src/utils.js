@@ -2,6 +2,7 @@ const utils = require('@multiplechain/utils');
 
 module.exports = Object.assign(utils, {
     async rejectMessage(error, reject) {
+        console.error(error);
         if (typeof error === 'object') {
             if (error.name == "ContractFunctionExecutionError") {
                 return reject('contract-function-error');
