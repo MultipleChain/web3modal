@@ -263,19 +263,7 @@ class Wallet {
      * @returns {String}
      */
     async getChainId() {
-        let id = await this.request({method: 'eth_chainId'});
-        if (!utils.isNumeric(id)) return parseInt(id, 16);
-        return id;
-    }
-
-    /**
-     * @returns {String}
-     */
-    async getChainHexId() {
-        let id = await this.request({method: 'eth_chainId'});
-        if (id == '0x01') return '0x1';
-        if (utils.isNumeric(id)) return '0x' + id.toString(16);
-        return id;
+        return parseInt((await this.request({method: 'eth_chainId'})), 16);
     }
 
     /**
@@ -286,6 +274,23 @@ class Wallet {
     }
 
     async connect() {
+        return new Promise((resolve, reject) => {
+            this.connection()
+            .then((account) => {
+                // if networks not equal
+                const { selectedNetworkId } = this.modal.getState();
+                if (this.connectedNetwork.id != selectedNetworkId) {
+                    return reject('not-accepted-chain');
+                }
+                resolve(account);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    async connection() {
         return new Promise(async (resolve, reject) => {
             try {
                 this.connectRejectMethod = reject;
@@ -410,11 +415,6 @@ class Wallet {
     coinTransfer(to, amount) {
         return new Promise(async (resolve, reject) => {
             try {
-                const { selectedNetworkId } = this.modal.getState();
-                if (this.connectedNetwork.id != selectedNetworkId) {
-                    return reject('not-accepted-chain');
-                }
-
                 const decimals = this.connectedNetwork.nativeCurrency.decimals;
                 const balance = await this.request({
                     method: 'eth_getBalance',
@@ -486,11 +486,6 @@ class Wallet {
     tokenTransfer(to, amount, tokenAddress) {
         return new Promise(async (resolve, reject) => {
             try {
-                const { selectedNetworkId } = this.modal.getState();
-                if (this.connectedNetwork.id != selectedNetworkId) {
-                    return reject('not-accepted-chain');
-                }
-
                 const token = await fetchToken({
                     address: tokenAddress,
                 });
