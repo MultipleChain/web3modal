@@ -117,11 +117,18 @@ class Wallet {
             }
         });
 
+        let clickedAnyWallet = false;
         this.modal.subscribeEvents(async (event) => {
+            if (event.data.event == "SELECT_WALLET") {
+                clickedAnyWallet = true;
+            }
             if (event.data.event == "MODAL_CLOSE") {
                 if (typeof this.connectRejectMethod == 'function') {
-                    if (this.connectedNetwork.id != (await this.getChainId())) {
-                        return this.connectRejectMethod('not-accepted-chain');
+                    if (clickedAnyWallet) {
+                        clickedAnyWallet = false;
+                        if (this.connectedNetwork.id != (await this.getChainId())) {
+                            return this.connectRejectMethod('not-accepted-chain');
+                        }
                     }
                     this.connectRejectMethod('closed-web3modal');
                 }
